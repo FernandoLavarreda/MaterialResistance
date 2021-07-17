@@ -1,7 +1,10 @@
 # Fernando Lavarreda
 # Manage information of the app
 
+import sys
 import sqlite3 as sql
+from manage import write_beams
+from outer import load as ld
 
 
 def build(DBLOC = "")->None:
@@ -12,7 +15,7 @@ def build(DBLOC = "")->None:
                                         inertia INTEGER,
                                         area INTEGER,
                                         height INTEGER,
-                                        weight INTEGER,
+                                        weight INTEGER
                                         );
                                         """)
     cursor.execute("""CREATE TABLE material( name VARCHAR(20) UNIQUE,
@@ -22,3 +25,11 @@ def build(DBLOC = "")->None:
                                             );""")
     db.commit()
     db.close()
+
+#Assign colums separetely
+
+if __name__ == "__main__":
+    build(sys.argv[1])
+    if len(sys.argv)>2:
+        cols = {"name":85, "type":1, "inertia":121, "area":88,"height":89, "weight":87}
+        write_beams(sys.argv[1], ld.beam_xlsx(sys.argv[2], sys.argv[3], [i for i in range(int(sys.argv[4]), int(sys.argv[5]))], cols))
