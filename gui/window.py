@@ -8,8 +8,9 @@ from tkinter.font import BOLD, Font
 
 
 class Main(tk.Tk):
-    def __init__(self, functions:dict, loc="media/metal.ico", materials=("car", "sher")) -> None:
+    def __init__(self, functions:dict, loc="media/metal.ico", materials=("car", "sher"), dbloc="") -> None:
         super().__init__()
+        self.db = dbloc
         self.functions = functions
         self.title("Beam Selector FerLavarreda")
         self.geometry("+150+100")
@@ -115,19 +116,19 @@ class Main(tk.Tk):
 
 
     def add(self, *args):
-        matches = self.functions['load_profiles'](self.profile.get().upper())
+        matches = self.functions['load_profiles'](self.db, self.profile.get().upper())
         for m in matches:
-            if m not in self.analyze['values']:
-                self.analyze['values']+=(m,)
+            if m[0] not in self.analyze['values']:
+                self.analyze['values']+=(m[0],)
 
     def material_planck(self, *args):
-        ymod, cstress, tstress = self.functions['load_material'](self.select1.get())
+        ymod, cstress, tstress = self.functions['load_material'](self.db, self.select1.get())
         self.get_planck_ymodulus.set(ymod)
         self.get_planck_cstress.set(cstress)
         self.get_planck_tstress.set(tstress)
 
     def material_beam(self, *args):
-        ymod, cstress, tstress = self.functions['load_material'](self.select2.get())
+        ymod, cstress, tstress = self.functions['load_material'](self.db, self.select2.get())
         self.get_beam_ymodulus.set(ymod)
         self.get_beam_cstress.set(cstress)
         self.get_beam_tstress.set(tstress)
@@ -156,7 +157,7 @@ class Main(tk.Tk):
                 main_planck = self.functions['create_planck'](height_planck, lens, mat_1)
                 beams = []
                 for beam in self.analyze['values']:
-                    beams.append(self.functions['create_beam'](*self.functions["load_beam"](beam), mat_2))
+                    beams.append(self.functions['create_beam'](*self.functions["load_profiles"](self.db, beam)[0], mat_2))
                 self.functions['main'](beams, main_planck, mom)
             except Exception:
                 mb.showerror("Error", "Entrada no numerica")

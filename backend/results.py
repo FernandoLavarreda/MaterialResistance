@@ -1,8 +1,9 @@
 # Fernando Lavarreda
 # Obtain values for a given beam & planck combination
 
-from obj.beam import Beam
-from obj.planck import Planck
+from .obj.beam import Beam
+from .obj.planck import Planck
+from .plot import plot_many
 
 def n_factor(beam_:Beam, planck_:Planck)->float:
     """Relation factor to transform upper planck to same material as beam"""
@@ -59,4 +60,6 @@ def stress_beams_planck(beams_:list, planck_:Planck, momentum_:float):
         all_beams.append(beam_points)
         all_plancks.append(planck_points)
         labels.append(beam_.get_name())
-    return all_beams, all_plancks, labels
+    plot_many(all_beams, all_plancks, labels, \
+        [-beams_[0].get_material().get_s_comp(), beams_[0].get_material().get_s_ten(), -planck_.get_material().get_s_comp(), planck_.get_material().get_s_ten()],\
+        [beams_[0].get_material().get_name()+"compression", beams_[0].get_material().get_name()+"tension", planck_.get_material().get_name()+"compression", planck_.get_material().get_name()+"tension"])

@@ -6,7 +6,7 @@ import sqlite3 as sql
 def call_beam(dbloc:str, name:str)->list:
     db = sql.connect(dbloc)
     cursor = db.cursor()
-    matches = list(cursor.execute("""SELECT * FROM beam WHERE name LIKE ?;""", (f"{name}%",)))
+    matches = cursor.execute("""SELECT * FROM beam WHERE name LIKE ?;""", (f"{name}%",)).fetchall()
     db.close()
     return matches
 
@@ -14,10 +14,16 @@ def call_beam(dbloc:str, name:str)->list:
 def call_material(dbloc:str, name:str):
     db = sql.connect(dbloc)
     cursor = db.cursor()
-    match = list(cursor.execute("""SELECT * FROM material WHERE name=(?);""", (name,)).fetchone())
+    match = cursor.execute("""SELECT * FROM material WHERE name=(?);""", (name,)).fetchone()
     db.close()
     return match
 
+def all_materials(dbloc:str):
+    db = sql.connect(dbloc)
+    cursor = db.cursor()
+    match = list(cursor.execute("""SELECT * FROM material;""").fetchall())
+    db.close()
+    return match
 
 def write_beams(dbloc:str, info:list):
     db = sql.connect(dbloc)
