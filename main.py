@@ -6,7 +6,7 @@ from backend.dbm import manage
 from backend.obj.beam import Beam
 from backend.obj.planck import Planck
 from backend.obj.material import Material
-from backend.results import stress_beams_planck
+from backend.results import stress_beams_planck, momentum_beams_planck
 
 
 ACTIONS = {
@@ -15,7 +15,8 @@ ACTIONS = {
     'create_material':Material,
     'create_planck':Planck,
     'create_beam':Beam,
-    'main':stress_beams_planck
+    'main':stress_beams_planck,
+    'secondary':momentum_beams_planck,
 }
 
 if __name__ == "__main__":

@@ -3,7 +3,7 @@
 
 from .obj.beam import Beam
 from .obj.planck import Planck
-from .plot import plot_many
+from .plot import plot_many, plot_momentum
 
 def n_factor(beam_:Beam, planck_:Planck)->float:
     """Relation factor to transform upper planck to same material as beam"""
@@ -62,4 +62,33 @@ def stress_beams_planck(beams_:list, planck_:Planck, momentum_:float):
         labels.append(beam_.get_name())
     plot_many(all_beams, all_plancks, labels, \
         [-beams_[0].get_material().get_s_comp(), beams_[0].get_material().get_s_ten(), -planck_.get_material().get_s_comp(), planck_.get_material().get_s_ten()],\
-        [beams_[0].get_material().get_name()+"compression", beams_[0].get_material().get_name()+"tension", planck_.get_material().get_name()+"compression", planck_.get_material().get_name()+"tension"])
+        [beams_[0].get_material().get_name()+"-compresion", beams_[0].get_material().get_name()+"-tension", planck_.get_material().get_name()+"-compression", planck_.get_material().get_name()+"-tension"])
+
+
+def momentum_beam_planck(beam_:Beam, planck_:Planck):
+    """Determine highest momentum allowed for beam-planck combination"""
+    n_f = n_factor(beam_, planck_)
+    zero = centroid(beam_, trasnform_planck(beam_, planck_))
+    inertia = transform_inertia(beam_, planck_)
+    moments = []
+    momentum_compression_planck = momentum(planck_.get_material().get_s_comp(), inertia, zero, n_f)
+    momentum_tension_beam = momentum(beam_.get_material().get_s_ten(), inertia, zero-planck_.get_height()-beam_.get_height())
+    moments.append(abs(momentum_compression_planck))
+    moments.append(abs(momentum_tension_beam))
+    if zero > planck_.get_height():
+        momentum_compression_beam = momentum(beam_.get_material().get_s_comp(), inertia, zero-planck_.get_height())
+        moments.append(abs(momentum_compression_beam))
+    if zero < planck_.get_height():
+        momentum_tension_planck = momentum(planck_.get_material().get_s_ten(), inertia, planck_.get_height()-zero, n_f)
+        moments.append(abs(momentum_tension_planck))
+    return min(moments)
+
+
+def momentum_beams_planck(beams_:list, planck_:Planck):
+    moments = []
+    labels = []
+    for beam_ in beams_:
+        moments.append(momentum_beam_planck(beam_, planck_))
+        labels.append(beam_.get_name())
+    plot_momentum(moments, labels, moments)
+    

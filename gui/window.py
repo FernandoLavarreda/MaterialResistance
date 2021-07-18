@@ -34,7 +34,7 @@ class Main(tk.Tk):
         self.get_planck_tstress = tk.DoubleVar()
         self.get_planck_cstress = tk.DoubleVar()
         self.get_planck_ymodulus = tk.DoubleVar()
-        self.select1 = ttk.Combobox(left_frame, values=materials, state="readonly")
+        self.select1 = ttk.Combobox(left_frame, values=materials)
 
         self.select1.bind("<<ComboboxSelected>>", self.material_planck)
 
@@ -67,7 +67,7 @@ class Main(tk.Tk):
         self.get_beam_cstress = tk.DoubleVar()
         self.get_beam_ymodulus = tk.DoubleVar()
         self.profile = tk.StringVar()
-        self.select2 = ttk.Combobox(right_frame, values=materials, state="readonly")
+        self.select2 = ttk.Combobox(right_frame, values=materials)
         self.select2.bind("<<ComboboxSelected>>", self.material_beam)
 
 
@@ -97,9 +97,10 @@ class Main(tk.Tk):
         ttk.Label(bottom_frame, text="Calcular momento optimo: ",  background=bf_color).grid(row=0, column=0, sticky=tk.NE+tk.SW)
         tk.Checkbutton(bottom_frame, variable=self.optimal_momentum, bg=bf_color).grid(row=0, column=1, sticky=tk.NE+tk.SW)
         ttk.Label(bottom_frame, text="Momento aplicado:", padding=(10, 0, 0, 0), background=bf_color).grid(row=0, column=2, sticky=tk.NE+tk.SW)
-        ttk.Entry(bottom_frame, textvariable=self.momentum).grid(row=0, column=3, sticky=tk.NE+tk.SW)
+        self.mm = ttk.Entry(bottom_frame, textvariable=self.momentum)
         tk.Button(bottom_frame, text="Calcular", command=self.run, bg="#FE615A", relief=tk.FLAT, width=15).grid(row=0, column=4, columnspan=2, sticky=tk.NE+tk.SW)
 
+        self.optimal_momentum.trace("w", self.habilitate)
         #-----------------------
         #-------------------------------------------------
 
@@ -111,6 +112,7 @@ class Main(tk.Tk):
         self.select1.grid(row=1, column=1)
         self.select2.grid(row=1, column=1)
         self.analyze.grid(row=6, column=1, sticky=tk.NE+tk.SW)
+        self.mm.grid(row=0, column=3, sticky=tk.NE+tk.SW)
         self.config(menu=menu, background="black")
         self.resizable(False, False)
 
@@ -137,6 +139,13 @@ class Main(tk.Tk):
         self.analyze.set("")
         self.analyze['values'] = []
     
+    def habilitate(self, *args):
+        if self.optimal_momentum.get():
+            self.momentum.set(0)
+            self.mm.config(state=tk.DISABLED)
+        else:
+            self.mm.config(state=tk.ACTIVE)
+    
     def run(self, *args):
         if self.analyze['values']:
             try:
@@ -151,14 +160,22 @@ class Main(tk.Tk):
                 tsbeam = self.get_beam_tstress.get()
 
                 mom = self.momentum.get()
-
-                mat_1 = self.functions['create_material']('a.', yplanck, csplanck, tsplanck)
-                mat_2 = self.functions["create_material"]('d.', ybeam, csbeam, tsbeam)
+                name1 = "plancha"
+                name2 = "viga"
+                if not self.select1.get() == "":
+                    name1 = self.select1.get()
+                if not self.select2.get() == "":
+                    name2 = self.select2.get()
+                mat_1 = self.functions['create_material'](name1, yplanck, csplanck, tsplanck)
+                mat_2 = self.functions["create_material"](name2, ybeam, csbeam, tsbeam)
                 main_planck = self.functions['create_planck'](height_planck, lens, mat_1)
                 beams = []
                 for beam in self.analyze['values']:
                     beams.append(self.functions['create_beam'](*self.functions["load_profiles"](self.db, beam)[0], mat_2))
-                self.functions['main'](beams, main_planck, mom)
+                if self.optimal_momentum.get():
+                    self.functions['secondary'](beams, main_planck)
+                else:
+                    self.functions['main'](beams, main_planck, mom)
             except Exception:
                 mb.showerror("Error", "Entrada no numerica")
         else:
