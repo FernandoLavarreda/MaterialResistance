@@ -26,8 +26,8 @@ def build(DBLOC = "")->None:
     db.commit()
     db.close()
 
-#Assign colums separetely
-
+# Assign colums separetely
+# Call it from the main root folder
 if __name__ == "__main__":
     build(sys.argv[1])
     if len(sys.argv)>2:
