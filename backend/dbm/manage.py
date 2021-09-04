@@ -3,10 +3,13 @@
 
 import sqlite3 as sql
 
-def call_beam(dbloc:str, name:str)->list:
+def call_beam(dbloc:str, name:str, exact=False)->list:
     db = sql.connect(dbloc)
     cursor = db.cursor()
-    matches = cursor.execute("""SELECT * FROM beam WHERE name LIKE ?;""", (f"{name}%",)).fetchall()
+    if exact:
+        matches = cursor.execute("""SELECT * FROM beam WHERE name= ?;""", (f"{name}",)).fetchall()
+    else:
+        matches = cursor.execute("""SELECT * FROM beam WHERE name LIKE ?;""", (f"{name}%",)).fetchall()
     db.close()
     return matches
 

@@ -171,7 +171,7 @@ class Main(tk.Tk):
                 main_planck = self.functions['create_planck'](height_planck, lens, mat_1)
                 beams = []
                 for beam in self.analyze['values']:
-                    beams.append(self.functions['create_beam'](*self.functions["load_profiles"](self.db, beam)[0], mat_2))
+                    beams.append(self.functions['create_beam'](*self.functions["load_profiles"](self.db, beam, exact=True)[0], mat_2))
                 if self.optimal_momentum.get():
                     self.functions['secondary'](beams, main_planck)
                 else:

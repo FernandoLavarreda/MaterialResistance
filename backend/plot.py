@@ -21,6 +21,7 @@ def plot_one(beams:list, plancks:list, label:str, vlines:list, vlabels:list):
 
 
 def plot_many(beams:list, plancks:list, labels:list, vlines:list, vlabels:list):
+    COLORS =["#ff2400", "blue", "#d0f0c0", "#e34234"]
     for plot in range(len(beams)):
         color = (random(), random(), random())
         plt.plot(beams[plot][0], beams[plot][1], label=labels[plot], color=color)
@@ -30,9 +31,9 @@ def plot_many(beams:list, plancks:list, labels:list, vlines:list, vlabels:list):
         plt.annotate(round(plancks[plot][0][0], 2), (plancks[plot][0][0], plancks[plot][1][0]))
         plt.annotate(round(plancks[plot][0][1], 2), (plancks[plot][0][1], plancks[plot][1][1]))
     for v in range(len(vlines)):
-        plt.vlines(vlines[v], -70, 70, label=vlabels[v])
-    plt.vlines(0, -140, 140, color="black")
-    plt.hlines(0, min(vlines)*1.2, max(vlines)*1.2, color="black")
+        plt.vlines(vlines[v], -70, 70, label=vlabels[v], color=COLORS[v])
+    plt.vlines(0, -140, 140, color="black", linewidth=0.4)
+    plt.hlines(0, min(vlines)*1.2, max(vlines)*1.2, color="black", linewidth=0.4)
     plt.xlabel("Esfuerzo")
     plt.ylabel("Altura")
     plt.title("Altura/Esfuerzo")
