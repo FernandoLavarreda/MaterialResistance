@@ -13,7 +13,7 @@ def beam_xlsx(loctation:str, sheet:str, rows:list, columns:dict):
         for row in rows:
             name = file_sheet.cell(row, columns["name"]).value
             type_ = file_sheet.cell(row, columns["type"]).value
-            inertia = int(file_sheet.cell(row, columns["inertia"]).value*1000000)
+            inertia = int(file_sheet.cell(row, columns["inertia"]).value)
             area = int(file_sheet.cell(row, columns["area"]).value)
             height = int(file_sheet.cell(row, columns["height"]).value)
             weight = int(file_sheet.cell(row, columns["weight"]).value)
